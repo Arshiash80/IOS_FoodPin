@@ -34,10 +34,23 @@ class RestaurantTableViewController: UITableViewController {
     ]
     
     lazy var dataSource = configureDataSource()
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showRestaurantDetail" {
+            if let indexPath = tableView.indexPathForSelectedRow {
+                let destinationController = segue.destination as! RestaurantDetailViewController
+                destinationController.restaurant = self.restaurants[indexPath.row]
+            }
+        }
+    }
 
     // MARK: - View controller life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Large title style for navigation.
+        navigationController?.navigationBar.prefersLargeTitles = true
+        
         // 👇 We first assign our custom dataSource to the table view's data source.
         tableView.dataSource = dataSource
         // 👇 Remove default seperator style from table view
@@ -77,63 +90,6 @@ class RestaurantTableViewController: UITableViewController {
 
         return dataSource
     }
-    
-    // MARK: -UITableViewDelegate Protocol
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        let currentCell = tableView.cellForRow(at: indexPath) as! RestaurantTableViewCell
-        let currentCellNameLabel = currentCell.nameLabel.text!
-        
-        // Create an option menu as an action sheet.
-        let optionMenu = UIAlertController(title: nil, message: "What do you want to do with \(currentCellNameLabel)?", preferredStyle: .actionSheet)
-        
-        // 🚩👇 it will store the popover presentation controller when the app is run on "iPad".
-        if let popoverController = optionMenu.popoverPresentationController {
-            if let cell = tableView.cellForRow(at: indexPath) {
-                popoverController.sourceView = cell
-                popoverController.sourceRect = cell.bounds
-            }
-        }
-        
-        // MARK: Add actions to the menu.
-        
-        // Add Cancel action
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        optionMenu.addAction(cancelAction)
-        
-        // Add "Reserve a table" action.
-        let reserveActionHandler = { (action: UIAlertAction!) -> Void in
-            let alertMessage = UIAlertController(title: "Not Available Yet", message: "Sorry this feature is not available yet!", preferredStyle: .alert)
-            alertMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self.present(alertMessage, animated: true, completion: nil)
-            
-        }
-        let reserveAction = UIAlertAction(title: "Reserve a table at \(currentCellNameLabel)", style: .default, handler: reserveActionHandler)
-        
-        optionMenu.addAction(reserveAction)
-        
-        // Add favorite action.
-        let favoriteActionTitle = self.restaurants[indexPath.row].isFavorite ? "Remove from favorites" : "Mark as favorite"
-        let favoriteAction = UIAlertAction(title: favoriteActionTitle, style: .default, handler: {
-            (action:UIAlertAction!) -> Void in
-
-            let cell = tableView.cellForRow(at: indexPath) as! RestaurantTableViewCell
-
-            cell.favoriteHeart.isHidden = self.restaurants[indexPath.row].isFavorite
-
-            self.restaurants[indexPath.row].isFavorite = self.restaurants[indexPath.row].isFavorite ? false : true
-            
-        })
-        
-        optionMenu.addAction(favoriteAction)
-        
-        // Display the menu
-        present(optionMenu, animated: true, completion: nil)
-        
-        // Deselct the row
-        tableView.deselectRow(at: indexPath, animated: false)
-    }
-    
     
     // MARK: Swipe left to right
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -181,6 +137,7 @@ class RestaurantTableViewController: UITableViewController {
         let swipeConfiguration = UISwipeActionsConfiguration(actions: [deleteAction, shareAction])
         return swipeConfiguration
     }
+    
     // MARK: Swipe right to left
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         // Add to favorite action.
@@ -205,3 +162,61 @@ class RestaurantTableViewController: UITableViewController {
         return swipeConfiguration
     }
 }
+
+
+
+//// MARK: -UITableViewDelegate Protocol
+//override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//
+//    let currentCell = tableView.cellForRow(at: indexPath) as! RestaurantTableViewCell
+//    let currentCellNameLabel = currentCell.nameLabel.text!
+//
+//    // Create an option menu as an action sheet.
+//    let optionMenu = UIAlertController(title: nil, message: "What do you want to do with \(currentCellNameLabel)?", preferredStyle: .actionSheet)
+//
+//    // 🚩👇 it will store the popover presentation controller when the app is run on "iPad".
+//    if let popoverController = optionMenu.popoverPresentationController {
+//        if let cell = tableView.cellForRow(at: indexPath) {
+//            popoverController.sourceView = cell
+//            popoverController.sourceRect = cell.bounds
+//        }
+//    }
+//
+//    // MARK: Add actions to the menu.
+//
+//    // Add Cancel action
+//    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+//    optionMenu.addAction(cancelAction)
+//
+//    // Add "Reserve a table" action.
+//    let reserveActionHandler = { (action: UIAlertAction!) -> Void in
+//        let alertMessage = UIAlertController(title: "Not Available Yet", message: "Sorry this feature is not available yet!", preferredStyle: .alert)
+//        alertMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//        self.present(alertMessage, animated: true, completion: nil)
+//
+//    }
+//    let reserveAction = UIAlertAction(title: "Reserve a table at \(currentCellNameLabel)", style: .default, handler: reserveActionHandler)
+//
+//    optionMenu.addAction(reserveAction)
+//
+//    // Add favorite action.
+//    let favoriteActionTitle = self.restaurants[indexPath.row].isFavorite ? "Remove from favorites" : "Mark as favorite"
+//    let favoriteAction = UIAlertAction(title: favoriteActionTitle, style: .default, handler: {
+//        (action:UIAlertAction!) -> Void in
+//
+//        let cell = tableView.cellForRow(at: indexPath) as! RestaurantTableViewCell
+//
+//        cell.favoriteHeart.isHidden = self.restaurants[indexPath.row].isFavorite
+//
+//        self.restaurants[indexPath.row].isFavorite = self.restaurants[indexPath.row].isFavorite ? false : true
+//
+//    })
+//
+//    optionMenu.addAction(favoriteAction)
+//
+//    // Display the menu
+//    present(optionMenu, animated: true, completion: nil)
+//
+//    // Deselct the row
+//    tableView.deselectRow(at: indexPath, animated: false)
+//}
