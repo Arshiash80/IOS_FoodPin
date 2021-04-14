@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  FoodPin
 //
-//  Created by Appwox on 21.03.2021.
+//  Created by Simon Ng on 14/10/2020.
 //
 
 import UIKit

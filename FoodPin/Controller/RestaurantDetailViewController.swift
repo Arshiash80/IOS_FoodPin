@@ -2,33 +2,33 @@
 //  RestaurantDetailViewController.swift
 //  FoodPin
 //
-//  Created by Appwox on 4.04.2021.
+//  Created by Simon Ng on 21/10/2020.
 //
 
 import UIKit
 
 class RestaurantDetailViewController: UIViewController {
     
-    var restaurant:Restaurant?
+    @IBOutlet var tableView: UITableView!
+    @IBOutlet var headerView: RestaurantDetailHeaderView!
     
-    @IBOutlet var restaurantImageView:UIImageView!
-    @IBOutlet var restaurantName:UILabel!
-    @IBOutlet var restaurantType:UILabel!
-    @IBOutlet var restaurantLocation:UILabel!
-    
-    @IBOutlet var restaurantInfoView:UIView!
 
+    var restaurant: Restaurant = Restaurant()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        restaurantInfoView.layer.cornerRadius = CGFloat(10)
+        navigationController?.navigationBar.prefersLargeTitles = false
         
-        restaurantImageView.image = UIImage(named: restaurant?.image ?? "")
-        restaurantName.text = restaurant?.name
-        restaurantLocation.text = restaurant?.location
-        restaurantType.text = restaurant?.type
-        
-        // Disable large title
-        navigationItem.largeTitleDisplayMode = .never
+        // Configure header view
+        headerView.nameLabel.text = restaurant.name
+        headerView.typeLabel.text = restaurant.type
+        headerView.headerImageView.image = UIImage(named: restaurant.image)
+        let heartImage = restaurant.isFavorite ? "heart.fill" : "heart"
+        headerView.heartButton.tintColor = restaurant.isFavorite ? .systemYellow : .white
+        headerView.heartButton.setImage(UIImage(systemName: heartImage), for: .normal)
+
     }
+    
+
 }
